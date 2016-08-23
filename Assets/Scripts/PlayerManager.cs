@@ -5,8 +5,6 @@ public class PlayerManager : MonoBehaviour {
 	public SteamVR_TrackedController leftController;
 	public SteamVR_TrackedController rightController;
 
-	private bool rightTriggered = false;
-	private bool leftTriggered = false;
 
 	private bool rightGripped = false;
 	private bool leftGripped = false;
@@ -21,11 +19,6 @@ public class PlayerManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		leftController.TriggerClicked += LeftController_TriggerClicked;
-		rightController.TriggerClicked += RightController_TriggerClicked;
-
-		leftController.TriggerUnclicked += LeftController_TriggerUnclicked;
-		rightController.TriggerUnclicked += RightController_TriggerUnclicked;
 
 		leftController.Gripped += LeftController_Gripped;
 		rightController.Gripped += RightController_Gripped;
@@ -70,34 +63,26 @@ public class PlayerManager : MonoBehaviour {
 	{
 		
 	}
-
-	/*
-	 * Triggers
-	 */
-	void RightController_TriggerUnclicked (object sender, ClickedEventArgs e)
-	{
-		rightTriggered = false;
-	}
-
-	void LeftController_TriggerUnclicked (object sender, ClickedEventArgs e)
-	{
-		leftTriggered = false;
-	}
-
-	void RightController_TriggerClicked (object sender, ClickedEventArgs e)
-	{
-		rightTriggered = true;
-	}
-
-	void LeftController_TriggerClicked (object sender, ClickedEventArgs e)
-	{
-		leftTriggered = true;
-	}
+		
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if (leftGripped && !rightGripped) {
+			gameObject.transform.Translate (Vector3.up * Time.deltaTime);
+		}
+
+		if (rightGripped && !leftGripped) {
+			gameObject.transform.Translate (Vector3.down * Time.deltaTime);
+			Vector3 newPos = gameObject.transform.position;
+			if (newPos.y < 0f) {
+				gameObject.transform.position = new Vector3 (newPos.x, 0, newPos.z);
+			}
+		}
 	}
 
-	void GrabADab(
+	void GrabADab() {
+	}
+
+
+
 }

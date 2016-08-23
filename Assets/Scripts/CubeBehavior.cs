@@ -5,6 +5,7 @@ public class CubeBehavior : MonoBehaviour {
 	private Color defaultColor;
 	private Color highlightColor = new Color(0.0f, 1.0f, 0.0f);
 	private Color selectedColor = new Color(0.0f, 0.0f, 1.0f);
+	private Rigidbody rb;
 	private bool isSelected = false;
 	private Renderer myRenderer;
 
@@ -12,6 +13,7 @@ public class CubeBehavior : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		rb = gameObject.GetComponent<Rigidbody>();
 		myRenderer = gameObject.GetComponent<Renderer>();
 		defaultColor  = myRenderer.material.color;
 
@@ -31,6 +33,7 @@ public class CubeBehavior : MonoBehaviour {
 	}
 
 	public void Grabbed() {
+		rb.isKinematic = true;
 		isSelected = true;
 		SetHighlight(selectedColor);
 
@@ -43,6 +46,7 @@ public class CubeBehavior : MonoBehaviour {
 	}
 
 	public void Released() {
+		rb.isKinematic = false;
 		isSelected = false;
 		OutTouch();
 	}
