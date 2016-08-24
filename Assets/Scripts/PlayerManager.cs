@@ -3,12 +3,13 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour {
 	public SteamVR_TrackedController leftController;
-	public SteamVR_TrackedController rightController;
-
+	public SteamVR_TrackedController rightController;    
 
 	private bool rightGripped = false;
 	private bool leftGripped = false;
+    private bool lateFlag = false;
 
+    private float maxWalkHeight = 999f;
 	/*
 	 * Grip left to fly up, grip right to fly down. Definitely need to mix 'on trigger enter'
 	 * Walk on ground like normal
@@ -28,6 +29,7 @@ public class PlayerManager : MonoBehaviour {
 
 		leftController.PadClicked += PadClicked;
 		rightController.PadClicked += PadClicked;
+
 	}
 
 
@@ -69,19 +71,35 @@ public class PlayerManager : MonoBehaviour {
 	void Update () {
 		if (leftGripped && !rightGripped) {
 			gameObject.transform.Translate (Vector3.up * Time.deltaTime);
-		}
+		} else if (rightGripped && !leftGripped)
+        {
+            gameObject.transform.Translate(Vector3.down * Time.deltaTime);
+            Vector3 newPos = gameObject.transform.position;
+            if (newPos.y < 0f)
+            {
+                gameObject.transform.position = new Vector3(newPos.x, 0, newPos.z);
+            }
+        }
+        //Debug.Log("Count: " + CubeBehavior.groundCount);
+        if (CubeBehavior.groundCount > 3)
+        {
+            StartCoroutine(ResetGame());
 
-		if (rightGripped && !leftGripped) {
-			gameObject.transform.Translate (Vector3.down * Time.deltaTime);
-			Vector3 newPos = gameObject.transform.position;
-			if (newPos.y < 0f) {
-				gameObject.transform.position = new Vector3 (newPos.x, 0, newPos.z);
-			}
-		}
-	}
+        }
+    }
 
-	void GrabADab() {
-	}
+
+    IEnumerator ResetGame()
+    {
+        yield return new WaitForSeconds(3);
+        CubeBehavior.groundCount = 0;
+        CubeBehavior[] cubes = FindObjectsOfType<CubeBehavior>();
+        foreach (CubeBehavior cube in cubes)
+        {
+            cube.reset();
+        }
+    }
+
 
 
 

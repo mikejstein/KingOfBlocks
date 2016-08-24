@@ -5,10 +5,17 @@ public class CubeBehavior : MonoBehaviour {
 	private Color defaultColor;
 	private Color highlightColor = new Color(0.0f, 1.0f, 0.0f);
 	private Color selectedColor = new Color(0.0f, 0.0f, 1.0f);
-	private Rigidbody rb;
-	private bool isSelected = false;
-	private Renderer myRenderer;
+    private Renderer myRenderer;
 
+    private Rigidbody rb;
+	private bool isSelected = false;
+
+    private bool onGround;
+    public static int groundCount;
+    public static int towerHeight = 0;
+
+    private Quaternion initialRotation;
+    private Vector3 initialPosition;
 
 
 	// Use this for initialization
@@ -16,6 +23,8 @@ public class CubeBehavior : MonoBehaviour {
 		rb = gameObject.GetComponent<Rigidbody>();
 		myRenderer = gameObject.GetComponent<Renderer>();
 		defaultColor  = myRenderer.material.color;
+        initialRotation = rb.transform.rotation;
+        initialPosition = rb.transform.position;
 
 	}
 
@@ -54,4 +63,27 @@ public class CubeBehavior : MonoBehaviour {
 	public void OutTouch() {
 		RemoveHighlight();
 	}
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag == "Ground")
+        {
+            if (!onGround)
+            {
+                onGround = true;
+                CubeBehavior.groundCount++;
+            }
+        }
+    }
+
+
+
+    public void reset()
+    {
+        onGround = false;
+        gameObject.transform.position = initialPosition;
+        gameObject.transform.rotation = initialRotation;
+        rb.velocity = new Vector3(0, 0, 0);
+        Released();
+    }
 }
