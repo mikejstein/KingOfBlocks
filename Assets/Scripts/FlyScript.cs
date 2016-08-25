@@ -34,11 +34,9 @@ public class FlyScript : MonoBehaviour {
         gameObject.transform.position = new Vector3(headLocation.x, rigLocation.y - 2, headLocation.z);
         if ((rigLocation.y > 0) && (!isActive))
         {
-            Debug.Log("MAKE ACTGIVE");
             isActive = true;
         } else if ((rigLocation.y == 0) && (isActive))
         {
-            Debug.Log("KILL");
             isActive = false;
         }
 	}

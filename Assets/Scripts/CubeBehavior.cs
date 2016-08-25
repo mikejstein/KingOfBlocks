@@ -17,9 +17,15 @@ public class CubeBehavior : MonoBehaviour {
     private Quaternion initialRotation;
     private Vector3 initialPosition;
 
+    public AudioSource boxHitSource;
+    public AudioSource crashHitSource;
+    private bool allowSound = false;
+    
+
 
 	// Use this for initialization
 	void Start () {
+
 		rb = gameObject.GetComponent<Rigidbody>();
 		myRenderer = gameObject.GetComponent<Renderer>();
 		defaultColor  = myRenderer.material.color;
@@ -38,7 +44,7 @@ public class CubeBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        allowSound = true;
 	}
 
 	public void Grabbed() {
@@ -70,12 +76,24 @@ public class CubeBehavior : MonoBehaviour {
         {
             if (!onGround)
             {
+                playCrash();
+                crashHitSource.Play();
+
                 onGround = true;
                 CubeBehavior.groundCount++;
             }
+        } else if ((collision.collider.tag == "Block") && (allowSound))
+        {
+            playCrash();
         }
     }
 
+    private void playCrash()
+    {
+        if (!boxHitSource.isPlaying) { 
+            boxHitSource.Play();
+        }
+    }
 
 
     public void reset()

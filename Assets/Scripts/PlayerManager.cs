@@ -80,7 +80,6 @@ public class PlayerManager : MonoBehaviour {
                 gameObject.transform.position = new Vector3(newPos.x, 0, newPos.z);
             }
         }
-        //Debug.Log("Count: " + CubeBehavior.groundCount);
         if (CubeBehavior.groundCount > 3)
         {
             StartCoroutine(ResetGame());
