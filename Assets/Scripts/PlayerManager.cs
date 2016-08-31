@@ -3,7 +3,9 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour {
 	public SteamVR_TrackedController leftController;
-	public SteamVR_TrackedController rightController;    
+	public SteamVR_TrackedController rightController;
+    public SteamVR_Camera camera;
+    public FlyScript flyer;
 
 	private bool rightGripped = false;
 	private bool leftGripped = false;
@@ -71,12 +73,15 @@ public class PlayerManager : MonoBehaviour {
 	void Update () {
 		if (leftGripped && !rightGripped) {
 			gameObject.transform.Translate (Vector3.up * Time.deltaTime);
+            flyer.toggleActive(true);
 		} else if (rightGripped && !leftGripped)
         {
             gameObject.transform.Translate(Vector3.down * Time.deltaTime);
             Vector3 newPos = gameObject.transform.position;
+            Debug.Log("Located at " + newPos.y);
             if (newPos.y < 0f)
             {
+                flyer.toggleActive(false);
                 gameObject.transform.position = new Vector3(newPos.x, 0, newPos.z);
             }
         }

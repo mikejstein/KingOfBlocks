@@ -20,6 +20,8 @@ public class CubeBehavior : MonoBehaviour {
     public AudioSource boxHitSource;
     public AudioSource crashHitSource;
     private bool allowSound = false;
+
+//    public ScoreDisplay scoreDisplay;
     
 
 
@@ -64,6 +66,7 @@ public class CubeBehavior : MonoBehaviour {
 		rb.isKinematic = false;
 		isSelected = false;
 		OutTouch();
+        ScoreDisplay.Instance.blockPlaced(gameObject.transform.position);
 	}
 
 	public void OutTouch() {
@@ -76,8 +79,7 @@ public class CubeBehavior : MonoBehaviour {
         {
             if (!onGround)
             {
-                playCrash();
-                crashHitSource.Play();
+               //crashHitSource.Play();
 
                 onGround = true;
                 CubeBehavior.groundCount++;
