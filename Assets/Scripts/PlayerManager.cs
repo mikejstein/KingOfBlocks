@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class PlayerManager : MonoBehaviour {
 	public SteamVR_TrackedController leftController;
@@ -9,9 +10,9 @@ public class PlayerManager : MonoBehaviour {
 
 	private bool rightGripped = false;
 	private bool leftGripped = false;
-    private bool lateFlag = false;
 
-    private float maxWalkHeight = 999f;
+    bool resetInAction = false;
+
 	/*
 	 * Grip left to fly up, grip right to fly down. Definitely need to mix 'on trigger enter'
 	 * Walk on ground like normal
@@ -78,7 +79,6 @@ public class PlayerManager : MonoBehaviour {
         {
             gameObject.transform.Translate(Vector3.down * Time.deltaTime);
             Vector3 newPos = gameObject.transform.position;
-            Debug.Log("Located at " + newPos.y);
             if (newPos.y < 0f)
             {
                 flyer.toggleActive(false);
@@ -87,7 +87,12 @@ public class PlayerManager : MonoBehaviour {
         }
         if (CubeBehavior.groundCount > 3)
         {
-            StartCoroutine(ResetGame());
+            CubeBehavior.groundCount = 0;
+            if (!resetInAction)
+            {
+                StartCoroutine(ResetGame());
+                resetInAction = true;
+            } 
 
         }
     }
@@ -95,14 +100,31 @@ public class PlayerManager : MonoBehaviour {
 
     IEnumerator ResetGame()
     {
-        yield return new WaitForSeconds(3);
-        CubeBehavior.groundCount = 0;
-        CubeBehavior[] cubes = FindObjectsOfType<CubeBehavior>();
-        foreach (CubeBehavior cube in cubes)
+        yield return new WaitForSeconds(1.5f);
+
+        CubeBehavior[] cubes = FindObjectsOfType<CubeBehavior>(); //Get all our cubes
+        int cubeCount = cubes.Length; //remeber how many there are
+
+        Action resetDone = () => // Action that will run after a cube has been repositioned
         {
-            cube.reset();
+            cubeCount--;
+            if (cubeCount == 0) //if all my cubes are in place
+            { 
+                resetInAction = false; //i'm done resetting
+                foreach (CubeBehavior cube in cubes) //release all the cubes
+                {
+                    cube.Released();
+                }
+            }
+        };
+
+        foreach (CubeBehavior cube in cubes) //begin the replacing process
+        {
+            cube.reset(resetDone); //make sure to pass in the action as a callback
         }
     }
+
+
 
 
 

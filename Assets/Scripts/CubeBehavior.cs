@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using DG.Tweening;
+using System;
 
 public class CubeBehavior : MonoBehaviour {
-	private Color defaultColor;
+
+
+    private Color defaultColor;
 	private Color highlightColor = new Color(0.0f, 1.0f, 0.0f);
 	private Color selectedColor = new Color(0.0f, 0.0f, 1.0f);
     private Renderer myRenderer;
@@ -11,14 +15,15 @@ public class CubeBehavior : MonoBehaviour {
 	private bool isSelected = false;
 
     private bool onGround;
-    public static int groundCount;
-    public static int towerHeight = 0;
+    public static int groundCount = 0;
+
 
     private Quaternion initialRotation;
     private Vector3 initialPosition;
 
     public AudioSource boxHitSource;
     public AudioSource crashHitSource;
+
     private bool allowSound = false;
 
 //    public ScoreDisplay scoreDisplay;
@@ -27,6 +32,7 @@ public class CubeBehavior : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        DOTween.Init();
 
 		rb = gameObject.GetComponent<Rigidbody>();
 		myRenderer = gameObject.GetComponent<Renderer>();
@@ -62,7 +68,10 @@ public class CubeBehavior : MonoBehaviour {
 		}
 	}
 
-	public void Released() {
+	public void Released(Vector3 addForce = default(Vector3), Vector3 addRotForce = default(Vector3)) {
+        rb.velocity = addForce;
+        rb.angularVelocity = addRotForce;
+        allowSound = true;
 		rb.isKinematic = false;
 		isSelected = false;
 		OutTouch();
@@ -98,12 +107,24 @@ public class CubeBehavior : MonoBehaviour {
     }
 
 
-    public void reset()
+    public void reset(Action callback)
     {
+       
         onGround = false;
-        gameObject.transform.position = initialPosition;
-        gameObject.transform.rotation = initialRotation;
-        rb.velocity = new Vector3(0, 0, 0);
-        Released();
+        allowSound = false;        
+        rb.isKinematic = true;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(transform.DOMove(initialPosition, 1.5f));
+        seq.Join(transform.DORotate(initialRotation.eulerAngles, 1.5f));
+        seq.AppendCallback(()=>completedReset(callback));
     }
+
+    private void completedReset(Action callback)
+    {
+        callback();
+    }
+
+
+
 }
