@@ -20,7 +20,7 @@ public class PickupManager : MonoBehaviour {
 	{
 		grabbed = false;
 		if (touchedBlock != null) {
-			touchedBlock.Released(velocity, angularVelocity);
+			touchedBlock.Released(velocity, angularVelocity, true);
 			touchedBlock.transform.parent = null;
 			touchedBlock = null;
 		}

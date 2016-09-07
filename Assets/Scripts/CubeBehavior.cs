@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using DG.Tweening;
 using System;
 
@@ -17,12 +16,10 @@ public class CubeBehavior : MonoBehaviour {
     private bool onGround;
     public static int groundCount = 0;
 
-
     private Quaternion initialRotation;
     private Vector3 initialPosition;
 
     public AudioSource boxHitSource;
-    public AudioSource crashHitSource;
 
     private bool allowSound = false;
 
@@ -52,7 +49,6 @@ public class CubeBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        allowSound = true;
 	}
 
 	public void Grabbed() {
@@ -68,10 +64,10 @@ public class CubeBehavior : MonoBehaviour {
 		}
 	}
 
-	public void Released(Vector3 addForce = default(Vector3), Vector3 addRotForce = default(Vector3)) {
+	public void Released(Vector3 addForce = default(Vector3), Vector3 addRotForce = default(Vector3), bool soundOn = false) {
         rb.velocity = addForce;
         rb.angularVelocity = addRotForce;
-        allowSound = true;
+        allowSound = soundOn;
 		rb.isKinematic = false;
 		isSelected = false;
 		OutTouch();
@@ -88,12 +84,11 @@ public class CubeBehavior : MonoBehaviour {
         {
             if (!onGround)
             {
-               //crashHitSource.Play();
-
                 onGround = true;
                 CubeBehavior.groundCount++;
             }
-        } else if ((collision.collider.tag == "Block") && (allowSound))
+        }
+        else if ((collision.collider.tag == "Block") && (allowSound))
         {
             playCrash();
         }
@@ -122,7 +117,12 @@ public class CubeBehavior : MonoBehaviour {
 
     private void completedReset(Action callback)
     {
-        callback();
+        callback(); //callback hits cube.released at it's last action
+    }
+
+    public void setSound(bool soundState)
+    {
+        allowSound = soundState;
     }
 
 

@@ -5,26 +5,34 @@ using System;
 public class PlayerManager : MonoBehaviour {
 	public SteamVR_TrackedController leftController;
 	public SteamVR_TrackedController rightController;
-    public SteamVR_Camera camera;
+    public SteamVR_Camera VRcamera;
     public FlyScript flyer;
 
 	private bool rightGripped = false;
 	private bool leftGripped = false;
 
     bool resetInAction = false;
+    bool justFinishedReset = false;
+    public AudioSource gameOverSource;
 
-	/*
+    CubeBehavior[] cubes;
+    int cubeCount;
+
+    /*
 	 * Grip left to fly up, grip right to fly down. Definitely need to mix 'on trigger enter'
 	 * Walk on ground like normal
 	 * Fly in air with d-pads for movement
 	 * grab with either hand
 	 */
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
+
+        cubes = FindObjectsOfType<CubeBehavior>(); //Get all our cubes
+        cubeCount = cubes.Length; //remeber how many there are
 
 
-		leftController.Gripped += LeftController_Gripped;
+        leftController.Gripped += LeftController_Gripped;
 		rightController.Gripped += RightController_Gripped;
 
 		leftController.Ungripped += LeftController_UnGripped;
@@ -88,12 +96,24 @@ public class PlayerManager : MonoBehaviour {
         if (CubeBehavior.groundCount > 3)
         {
             CubeBehavior.groundCount = 0;
+            if (!gameOverSource.isPlaying)
+            {
+                gameOverSource.Play();
+            }
             if (!resetInAction)
             {
                 StartCoroutine(ResetGame());
                 resetInAction = true;
             } 
+        }
+        if (justFinishedReset)
+        {
+            justFinishedReset = false;
+            foreach (CubeBehavior cube in cubes) //release all the cubes
+            {
+                cube.setSound(true);
 
+            }
         }
     }
 
@@ -101,20 +121,20 @@ public class PlayerManager : MonoBehaviour {
     IEnumerator ResetGame()
     {
         yield return new WaitForSeconds(1.5f);
-
-        CubeBehavior[] cubes = FindObjectsOfType<CubeBehavior>(); //Get all our cubes
-        int cubeCount = cubes.Length; //remeber how many there are
+        int resetCount = cubeCount;
 
         Action resetDone = () => // Action that will run after a cube has been repositioned
         {
-            cubeCount--;
-            if (cubeCount == 0) //if all my cubes are in place
+            resetCount--;
+            if (resetCount == 0) //if all my cubes are in place
             { 
                 resetInAction = false; //i'm done resetting
                 foreach (CubeBehavior cube in cubes) //release all the cubes
                 {
-                    cube.Released();
+                    cube.Released(); //cubes are released
                 }
+                justFinishedReset = true; //and the rest has just finished
+
             }
         };
 
