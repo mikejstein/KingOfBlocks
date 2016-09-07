@@ -17,6 +17,7 @@ public class CubeBehavior : MonoBehaviour {
     public static int groundCount = 0;
     public float mass = 100f;
 
+    private Vector3 initialPosition;
     private Quaternion initialRotation;
 
     public AudioSource boxHitSource;

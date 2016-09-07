@@ -14,6 +14,7 @@ public class PickupManager : MonoBehaviour {
 		controller = this.transform.parent.gameObject.GetComponent<SteamVR_TrackedController>();
 		controller.TriggerClicked += Controller_TriggerClicked;
 		controller.TriggerUnclicked += Controller_TriggerUnclicked;
+
 	}
 
 	void Controller_TriggerUnclicked (object sender, ClickedEventArgs e)
