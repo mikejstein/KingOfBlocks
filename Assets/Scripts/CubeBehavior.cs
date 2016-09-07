@@ -15,9 +15,9 @@ public class CubeBehavior : MonoBehaviour {
 
     private bool onGround;
     public static int groundCount = 0;
+    public float mass = 100f;
 
     private Quaternion initialRotation;
-    private Vector3 initialPosition;
 
     public AudioSource boxHitSource;
 
@@ -32,6 +32,7 @@ public class CubeBehavior : MonoBehaviour {
         DOTween.Init();
 
 		rb = gameObject.GetComponent<Rigidbody>();
+        rb.mass = mass;
 		myRenderer = gameObject.GetComponent<Renderer>();
 		defaultColor  = myRenderer.material.color;
         initialRotation = rb.transform.rotation;
@@ -49,11 +50,15 @@ public class CubeBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	}
+
+    }
 
 	public void Grabbed() {
 		rb.isKinematic = true;
-		isSelected = true;
+        rb.mass = 0;
+        BoxCollider myCol = rb.GetComponent<BoxCollider>();
+        myCol.size = new Vector3(0.9f, 0.9f, 0.9f);
+        isSelected = true;
 		SetHighlight(selectedColor);
 
 	}
@@ -64,13 +69,17 @@ public class CubeBehavior : MonoBehaviour {
 		}
 	}
 
+
 	public void Released(Vector3 addForce = default(Vector3), Vector3 addRotForce = default(Vector3), bool soundOn = false) {
+        rb.mass = mass;
         rb.velocity = addForce;
         rb.angularVelocity = addRotForce;
         allowSound = soundOn;
 		rb.isKinematic = false;
 		isSelected = false;
-		OutTouch();
+        BoxCollider myCol = rb.GetComponent<BoxCollider>();
+        myCol.size = new Vector3(1.0f, 1.0f, 1.0f);
+        OutTouch();
         ScoreDisplay.Instance.blockPlaced(gameObject.transform.position);
 	}
 
