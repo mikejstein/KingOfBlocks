@@ -49,9 +49,11 @@
      <Compile Include="Assets\Demigiant\DOTween\Examples\Sequences.cs" />
      <Compile Include="Assets\Scripts\ClothObject.cs" />
      <Compile Include="Assets\Scripts\CubeBehavior.cs" />
+     <Compile Include="Assets\Scripts\FireObject.cs" />
      <Compile Include="Assets\Scripts\FlyScript.cs" />
      <Compile Include="Assets\Scripts\PickupManager.cs" />
      <Compile Include="Assets\Scripts\PlayerManager.cs" />
+     <Compile Include="Assets\Scripts\RocketScript.cs" />
      <Compile Include="Assets\Scripts\ScoreDisplay.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
