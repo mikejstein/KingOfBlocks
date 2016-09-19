@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour {
 
 	private bool rightGripped = false;
 	private bool leftGripped = false;
+    public RocketScript rocket;
 
     bool resetInAction = false;
     bool justFinishedReset = false;
@@ -40,6 +41,8 @@ public class PlayerManager : MonoBehaviour {
 
 		leftController.PadClicked += PadClicked;
 		rightController.PadClicked += PadClicked;
+
+        FireRocket();
 
 	}
 
@@ -74,8 +77,14 @@ public class PlayerManager : MonoBehaviour {
 	 */
 	void PadClicked (object sender, ClickedEventArgs e)
 	{
-		
+        FireRocket();
 	}
+
+    private void FireRocket()
+    {
+        Vector3 transform = ScoreDisplay.Instance.currentText.gameObject.transform.position;
+        rocket.Go(transform);
+    }
 		
 	
 	// Update is called once per frame

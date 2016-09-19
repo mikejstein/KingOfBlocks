@@ -33,6 +33,13 @@ public class ScoreDisplay : MonoBehaviour {
         currentText.text = "0";
 
 	}
+
+    public void resetScore()
+    {
+        currentMaxHeight = 0;
+        saveHeights();
+
+    }
 	
 
     public void blockPlaced(Vector3 blockPosition)
@@ -46,9 +53,17 @@ public class ScoreDisplay : MonoBehaviour {
             {
                 currentMaxHeight = currentHeight;
                 maxText.text = currentMaxHeight.ToString();
-                PlayerPrefs.SetInt("maxHeight", currentMaxHeight);
-                PlayerPrefs.Save();
+                saveHeights();
             }
+        }
+    }
+
+    private void saveHeights()
+    {
+        
+        {
+            PlayerPrefs.SetInt("maxHeight", currentMaxHeight);
+            PlayerPrefs.Save();
         }
     }
 

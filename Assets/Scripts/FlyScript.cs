@@ -3,7 +3,7 @@ using System.Collections;
 
 public class FlyScript : MonoBehaviour {
     public GameObject head;
-    public ParticleSystem smoke;
+    public FireObject fire;
 
     private bool _isActive;
     public bool isActive {
@@ -13,11 +13,11 @@ public class FlyScript : MonoBehaviour {
             _isActive = value;
             if (_isActive)
             {
-                smoke.Play();
+                fire.startFire();
                 // DO SOMETHING HERE
             } else
             {
-                smoke.Stop();
+                fire.stopFire();
             }
         }
     }
