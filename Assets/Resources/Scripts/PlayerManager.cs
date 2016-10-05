@@ -20,10 +20,7 @@ public class PlayerManager : MonoBehaviour {
     int cubeCount;
 
     /*
-	 * Grip left to fly up, grip right to fly down. Definitely need to mix 'on trigger enter'
-	 * Walk on ground like normal
-	 * Fly in air with d-pads for movement
-	 * grab with either hand
+	 *
 	 */
 
     // Use this for initialization
@@ -82,8 +79,7 @@ public class PlayerManager : MonoBehaviour {
 
     private void FireRocket()
     {
-        Vector3 transform = ScoreDisplay.Instance.currentText.gameObject.transform.position;
-        rocket.Go(transform);
+        rocket.Go();
     }
 		
 	

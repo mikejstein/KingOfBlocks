@@ -60,7 +60,7 @@ public class RocketScript : MonoBehaviour {
         gameObject.BroadcastMessage("stopFire", SendMessageOptions.RequireReceiver);
     }
 
-    public void Go(Vector3 destination)
+    public void Go()
     {
         if (move == false) {
             StartFire();
