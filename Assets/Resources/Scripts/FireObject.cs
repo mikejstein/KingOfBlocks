@@ -5,6 +5,7 @@ public class FireObject : MonoBehaviour {
 
    public ParticleSystem regularFire;
     public ParticleSystem magicFire;
+
 	// Use this for initialization
 
     void Awake()
@@ -12,11 +13,12 @@ public class FireObject : MonoBehaviour {
         stopFire();
     }
 	void Start () {
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+
 	}
 
     public void startFire()

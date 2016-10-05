@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RocketScript : MonoBehaviour {
+public class RocketScript : MonoBehaviour
+{
     private bool move = false;
     private Vector3 endPosition;
     public GameObject endObject;
@@ -12,15 +13,18 @@ public class RocketScript : MonoBehaviour {
 
     public ParticleSystem explosion;
     public AudioSource explosionSound;
+    public AudioSource rocketSound;
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         endPosition = endObject.transform.position;
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-	    if (move)
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (move)
         {
             float distCovered = (Time.time - startTime) * speed; //distance = timeElapsed * speed
             float fracJourney = distCovered / journeyLength; //what percentage of the trip you've made
@@ -36,12 +40,13 @@ public class RocketScript : MonoBehaviour {
             if (gameObject.transform.position == endPosition)
             {
                 move = false;
-                StopFire();                
+                rocketSound.Stop();
+                StopFire();
                 ScoreDisplay.Instance.resetScore();
                 Destroy(gameObject);
             }
         }
-	}
+    }
 
     IEnumerator playSound()
     {
@@ -62,10 +67,13 @@ public class RocketScript : MonoBehaviour {
 
     public void Go()
     {
-        if (move == false) {
+
+        if (move == false)
+        {
             StartFire();
             startPosition = gameObject.transform.position;
             move = true;
+            rocketSound.Play();
             startTime = Time.time; //what time when i start
             journeyLength = Vector3.Distance(gameObject.transform.position, endPosition); // how long i have to travel 
         }

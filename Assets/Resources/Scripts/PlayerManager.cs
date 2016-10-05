@@ -38,9 +38,7 @@ public class PlayerManager : MonoBehaviour {
 
 		leftController.PadClicked += PadClicked;
 		rightController.PadClicked += PadClicked;
-
-        FireRocket();
-
+  
 	}
 
 

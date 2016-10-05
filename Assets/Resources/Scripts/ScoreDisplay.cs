@@ -37,9 +37,11 @@ public class ScoreDisplay : MonoBehaviour {
     public void resetScore()
     {
         currentMaxHeight = 0;
+        maxText.text = currentMaxHeight.ToString();
         saveHeights();
 
     }
+
 	
 
     public void blockPlaced(Vector3 blockPosition)
