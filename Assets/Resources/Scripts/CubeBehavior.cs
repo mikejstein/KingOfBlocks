@@ -58,7 +58,7 @@ public class CubeBehavior : MonoBehaviour {
 		rb.isKinematic = true;
         rb.mass = 0;
         BoxCollider myCol = rb.GetComponent<BoxCollider>();
-        myCol.size = new Vector3(0.9f, 0.9f, 0.9f);
+        myCol.size = new Vector3(0.7f, 0.7f, 0.7f);
         isSelected = true;
 		SetHighlight(selectedColor);
 
