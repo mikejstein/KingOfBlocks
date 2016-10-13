@@ -17,17 +17,25 @@ public class PlayerManager : MonoBehaviour {
     public AudioSource gameOverSource;
 
     CubeBehavior[] cubes;
+   
+
     int cubeCount;
+    private int spawnNumber = 2;
+    private int initialHeight = 0;
+    private int currentHeight = 0;
+    private bool spawnOpen = true;
 
     /*
-	 *
 	 */
+
+
 
     // Use this for initialization
     void Start () {
 
         cubes = FindObjectsOfType<CubeBehavior>(); //Get all our cubes
-        cubeCount = cubes.Length; //remeber how many there are
+        CubeBehavior.spawnHitDelegate += SpawnCubes;
+        cubeCount = cubes.Length; //remember how many there are
 
 
         leftController.Gripped += LeftController_Gripped;
@@ -42,10 +50,37 @@ public class PlayerManager : MonoBehaviour {
 	}
 
 
-	/*
+    void SpawnCubes()
+    {
+        if (spawnOpen)
+        {
+            spawnOpen = false;
+            Debug.Log(cubes.Length);
+            CubeBehavior dummy = cubes[0];
+            Transform cubeParent = dummy.transform.parent;
+            Transform stack = cubeParent.parent;
+            Vector3 currentParentPosition = stack.position;
+            Vector3 addHeight = new Vector3(0,stack.localScale.y * spawnNumber, 0);
+            stack.position = currentParentPosition + addHeight;
+
+            Vector3 newRowPosition = new Vector3(stack.position.x, 0, stack.position.z);
+            Transform newRow = (Transform)Instantiate(cubeParent, newRowPosition, Quaternion.identity);
+            Debug.Log(newRow.GetType());
+            newRow.SetParent(stack);
+
+            Transform secondRow = (Transform)Instantiate(cubeParent, newRowPosition + new Vector3(0,stack.localScale.y), Quaternion.Euler(0,90,0));
+            secondRow.SetParent(stack);
+
+
+        }
+
+    }
+
+
+    /*
 	 * Grips
 	 */
-	void RightController_Ungripped (object sender, ClickedEventArgs e)
+    void RightController_Ungripped (object sender, ClickedEventArgs e)
 	{
 		rightGripped = false;
 

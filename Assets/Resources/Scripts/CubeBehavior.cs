@@ -24,9 +24,8 @@ public class CubeBehavior : MonoBehaviour {
 
     private bool allowSound = false;
 
-//    public ScoreDisplay scoreDisplay;
-    
-
+    public delegate void OnSpawnHitDelegate();
+    public static event OnSpawnHitDelegate spawnHitDelegate;
 
 	// Use this for initialization
 	void Start () {
@@ -87,6 +86,15 @@ public class CubeBehavior : MonoBehaviour {
 	public void OutTouch() {
 		RemoveHighlight();
 	}
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Spawn")
+        {
+            //yell fire
+            spawnHitDelegate();
+        }
+    }
 
     void OnCollisionEnter(Collision collision)
     {

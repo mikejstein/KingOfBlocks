@@ -14,6 +14,7 @@ public class ScoreDisplay : MonoBehaviour {
 
     private int currentMaxHeight;
     private int currentHeight = 0;
+    private int initialHeight = 0;
 
     private void Awake()
     {
@@ -58,6 +59,11 @@ public class ScoreDisplay : MonoBehaviour {
                 saveHeights();
             }
         }
+    }
+
+    public void calcInitialHeight()
+    {
+
     }
 
     private void saveHeights()
