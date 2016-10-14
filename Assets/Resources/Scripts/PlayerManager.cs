@@ -20,11 +20,8 @@ public class PlayerManager : MonoBehaviour {
    
 
     int cubeCount;
-    private int spawnNumber = 2;
-    private int initialHeight = 0;
-    private int currentHeight = 0;
-    private bool spawnOpen = true;
-
+    public static bool spawnOpen = true;
+    private int spawnCount = 1;
     /*
 	 */
 
@@ -33,10 +30,8 @@ public class PlayerManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
-        cubes = FindObjectsOfType<CubeBehavior>(); //Get all our cubes
         CubeBehavior.spawnHitDelegate += SpawnCubes;
-        cubeCount = cubes.Length; //remember how many there are
-
+        UpdateCubes();
 
         leftController.Gripped += LeftController_Gripped;
 		rightController.Gripped += RightController_Gripped;
@@ -49,30 +44,51 @@ public class PlayerManager : MonoBehaviour {
   
 	}
 
-
-    void SpawnCubes()
+    private void UpdateCubes()
     {
-        if (spawnOpen)
-        {
-            spawnOpen = false;
-            Debug.Log(cubes.Length);
-            CubeBehavior dummy = cubes[0];
-            Transform cubeParent = dummy.transform.parent;
-            Transform stack = cubeParent.parent;
-            Vector3 currentParentPosition = stack.position;
-            Vector3 addHeight = new Vector3(0,stack.localScale.y * spawnNumber, 0);
-            stack.position = currentParentPosition + addHeight;
-
-            Vector3 newRowPosition = new Vector3(stack.position.x, 0, stack.position.z);
-            Transform newRow = (Transform)Instantiate(cubeParent, newRowPosition, Quaternion.identity);
-            Debug.Log(newRow.GetType());
-            newRow.SetParent(stack);
-
-            Transform secondRow = (Transform)Instantiate(cubeParent, newRowPosition + new Vector3(0,stack.localScale.y), Quaternion.Euler(0,90,0));
-            secondRow.SetParent(stack);
-
-
+        cubes = FindObjectsOfType<CubeBehavior>(); //Get all our cubes
+        cubeCount = cubes.Length; //remember how many there are
+        foreach (CubeBehavior cube in cubes) {
+            cube.setInitial();
         }
+    }
+
+
+    private void spawnLayer(Quaternion orient)
+    {
+        CubeBehavior dummy = cubes[0]; // get a base cube
+        Transform cubeParent = dummy.transform.parent; // get the parent of the cube (a grid of three)
+        Transform stack = cubeParent.parent; // Get the parent of the grid (the whole stack)
+        Vector3 currentParentPosition = stack.position; // get the current position of the stack
+        Vector3 addHeight = new Vector3(0, dummy.transform.lossyScale.y, 0); // raise the stack up by the number
+
+        stack.position = currentParentPosition + addHeight;
+
+        Vector3 newRowPosition = new Vector3(stack.position.x, 0, stack.position.z);
+        Transform newRow = (Transform)Instantiate(cubeParent, newRowPosition, orient);
+
+        newRow.SetParent(stack);
+
+        //add the new cubes to 
+    }
+
+    private void repositionSpawn(Transform spawnTrigger)
+    {
+        Vector3 newSpawnPostion = new Vector3(spawnTrigger.position.x, spawnTrigger.position.y + (spawnTrigger.position.y / spawnCount), spawnTrigger.position.z);// Move the spawn point up by the height of the platform
+        spawnCount++;
+        spawnTrigger.position = newSpawnPostion;
+
+    }
+
+    void SpawnCubes(Transform spawnTrigger)
+    {
+        PlayerManager.spawnOpen = false; //prevent spawn from happening right now
+        spawnLayer(Quaternion.Euler(0, 90, 0)); //build one platform
+        spawnLayer(Quaternion.identity); // build another platform
+        UpdateCubes(); // add the new cubes to our thing
+        CubeBehavior.groundCount = -3; // resest ground count to handle it
+        repositionSpawn(spawnTrigger);
+        PlayerManager.spawnOpen = true;
 
     }
 

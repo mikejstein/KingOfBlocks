@@ -24,7 +24,7 @@ public class CubeBehavior : MonoBehaviour {
 
     private bool allowSound = false;
 
-    public delegate void OnSpawnHitDelegate();
+    public delegate void OnSpawnHitDelegate(Transform spawnTrigger);
     public static event OnSpawnHitDelegate spawnHitDelegate;
 
 	// Use this for initialization
@@ -35,10 +35,15 @@ public class CubeBehavior : MonoBehaviour {
         rb.mass = mass;
 		myRenderer = gameObject.GetComponent<Renderer>();
 		defaultColor  = myRenderer.material.color;
-        initialRotation = rb.transform.rotation;
-        initialPosition = rb.transform.position;
+        //setInitial();
 
 	}
+
+    public void setInitial()
+    {
+        initialRotation = rb.transform.rotation;
+        initialPosition = rb.transform.position;
+    }
 
 	private void SetHighlight(Color color) {
 		myRenderer.material.color = color;
@@ -48,11 +53,6 @@ public class CubeBehavior : MonoBehaviour {
 		myRenderer.material.color = defaultColor;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-
-    }
-
 	public void Grabbed() {
 		rb.isKinematic = true;
         rb.mass = 0;
@@ -89,10 +89,13 @@ public class CubeBehavior : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Spawn")
+        if ((other.tag == "Spawn") && (rb.isKinematic == false))
         {
-            //yell fire
-            spawnHitDelegate();
+
+            if (PlayerManager.spawnOpen == true)
+            {
+                spawnHitDelegate(other.transform);
+            }
         }
     }
 
@@ -122,7 +125,7 @@ public class CubeBehavior : MonoBehaviour {
 
     public void reset(Action callback)
     {
-       
+
         onGround = false;
         allowSound = false;        
         rb.isKinematic = true;
