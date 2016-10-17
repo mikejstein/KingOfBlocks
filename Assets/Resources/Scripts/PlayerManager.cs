@@ -17,7 +17,6 @@ public class PlayerManager : MonoBehaviour {
     public AudioSource gameOverSource;
 
     CubeBehavior[] cubes;
-   
 
     int cubeCount;
     public static bool spawnOpen = true;
@@ -49,7 +48,7 @@ public class PlayerManager : MonoBehaviour {
         cubes = FindObjectsOfType<CubeBehavior>(); //Get all our cubes
         cubeCount = cubes.Length; //remember how many there are
         foreach (CubeBehavior cube in cubes) {
-            cube.setInitial();
+            cube.setInitial(); // update their initial position in case of explosion
         }
     }
 
@@ -60,7 +59,7 @@ public class PlayerManager : MonoBehaviour {
         Transform cubeParent = dummy.transform.parent; // get the parent of the cube (a grid of three)
         Transform stack = cubeParent.parent; // Get the parent of the grid (the whole stack)
         Vector3 currentParentPosition = stack.position; // get the current position of the stack
-        Vector3 addHeight = new Vector3(0, dummy.transform.lossyScale.y, 0); // raise the stack up by the number
+        Vector3 addHeight = new Vector3(0, dummy.transform.lossyScale.y, 0); // raise the stack up by the height of a block
 
         stack.position = currentParentPosition + addHeight;
 
@@ -85,7 +84,7 @@ public class PlayerManager : MonoBehaviour {
         PlayerManager.spawnOpen = false; //prevent spawn from happening right now
         spawnLayer(Quaternion.Euler(0, 90, 0)); //build one platform
         spawnLayer(Quaternion.identity); // build another platform
-        UpdateCubes(); // add the new cubes to our thing
+        UpdateCubes(); // add the new cubes to our internal state
         CubeBehavior.groundCount = -3; // resest ground count to handle it
         repositionSpawn(spawnTrigger);
         PlayerManager.spawnOpen = true;

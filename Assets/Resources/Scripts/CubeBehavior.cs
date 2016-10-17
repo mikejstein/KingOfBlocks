@@ -3,15 +3,21 @@ using DG.Tweening;
 using System;
 
 public class CubeBehavior : MonoBehaviour {
+    private enum CubeState
+    {
+        selected,
+        released,
+        landed,
+        stationary
+    }
 
-
+    private CubeState cubeState = CubeState.stationary;
     private Color defaultColor;
 	private Color highlightColor = new Color(0.0f, 1.0f, 0.0f);
 	private Color selectedColor = new Color(0.0f, 0.0f, 1.0f);
     private Renderer myRenderer;
 
     private Rigidbody rb;
-	private bool isSelected = false;
 
     private bool onGround;
     public static int groundCount = 0;
@@ -35,14 +41,19 @@ public class CubeBehavior : MonoBehaviour {
         rb.mass = mass;
 		myRenderer = gameObject.GetComponent<Renderer>();
 		defaultColor  = myRenderer.material.color;
-        //setInitial();
+        setInitial();
 
 	}
 
     public void setInitial()
     {
+        if (rb == null)
+        {
+            rb = gameObject.GetComponent<Rigidbody>();
+        }
         initialRotation = rb.transform.rotation;
         initialPosition = rb.transform.position;
+        
     }
 
 	private void SetHighlight(Color color) {
@@ -58,13 +69,13 @@ public class CubeBehavior : MonoBehaviour {
         rb.mass = 0;
         BoxCollider myCol = rb.GetComponent<BoxCollider>();
         myCol.size = new Vector3(0.7f, 0.7f, 0.7f);
-        isSelected = true;
+        cubeState = CubeState.selected;
 		SetHighlight(selectedColor);
 
 	}
 
 	public void InTouch() {
-		if(!isSelected) {
+		if(cubeState != CubeState.selected) {
 			SetHighlight(highlightColor);
 		}
 	}
@@ -76,7 +87,7 @@ public class CubeBehavior : MonoBehaviour {
         rb.angularVelocity = addRotForce;
         allowSound = soundOn;
 		rb.isKinematic = false;
-		isSelected = false;
+        cubeState = CubeState.released;
         BoxCollider myCol = rb.GetComponent<BoxCollider>();
         myCol.size = new Vector3(1.0f, 1.0f, 1.0f);
         OutTouch();
@@ -87,16 +98,26 @@ public class CubeBehavior : MonoBehaviour {
 		RemoveHighlight();
 	}
 
-    void OnTriggerEnter(Collider other)
-    {
-        if ((other.tag == "Spawn") && (rb.isKinematic == false))
-        {
 
+    private void SpawnCheck(Collider other)
+    {
+        if ((other.tag == "Spawn") && (cubeState == CubeState.landed))
+        {
+            cubeState = CubeState.stationary;
             if (PlayerManager.spawnOpen == true)
             {
                 spawnHitDelegate(other.transform);
             }
         }
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        SpawnCheck(other);
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        SpawnCheck(other);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -129,11 +150,13 @@ public class CubeBehavior : MonoBehaviour {
         onGround = false;
         allowSound = false;        
         rb.isKinematic = true;
+        cubeState = CubeState.stationary;
 
         Sequence seq = DOTween.Sequence();
         seq.Append(transform.DOMove(initialPosition, 1.5f));
         seq.Join(transform.DORotate(initialRotation.eulerAngles, 1.5f));
         seq.AppendCallback(()=>completedReset(callback));
+       
     }
 
     private void completedReset(Action callback)
@@ -146,6 +169,17 @@ public class CubeBehavior : MonoBehaviour {
         allowSound = soundState;
     }
 
+    public void Update()
+    {
+        if (cubeState == CubeState.released)
+        {
+            //Get my velocity
+            Vector3 velo = rb.velocity;
+            if ((velo.x + velo.y + velo.z) == 0) {
+                cubeState = CubeState.landed;
+            }
+        }
+    }
 
 
 }

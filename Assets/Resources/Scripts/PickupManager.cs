@@ -9,6 +9,8 @@ public class PickupManager : MonoBehaviour {
     public SteamVR_Controller.Device controllerD { get { return SteamVR_Controller.Input((int)controller.controllerIndex); } }
     public Vector3 velocity { get { return controllerD.velocity; } }
     public Vector3 angularVelocity { get { return controllerD.angularVelocity; } }
+
+    private Transform parentRef;
     // Use this for initialization
     void Start () {
 		controller = this.transform.parent.gameObject.GetComponent<SteamVR_TrackedController>();
@@ -22,7 +24,7 @@ public class PickupManager : MonoBehaviour {
 		grabbed = false;
 		if (touchedBlock != null) {
 			touchedBlock.Released(velocity, angularVelocity, true);
-			touchedBlock.transform.parent = null;
+            touchedBlock.transform.parent = parentRef;
 			touchedBlock = null;
 		}
 	}
@@ -32,7 +34,8 @@ public class PickupManager : MonoBehaviour {
 		grabbed = true;
 		if (touchedBlock != null) {
 			touchedBlock.Grabbed ();
-			touchedBlock.transform.parent = this.transform;
+            parentRef = touchedBlock.transform.parent;
+            touchedBlock.transform.parent = this.transform;
 		}
 	}
 	
